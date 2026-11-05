@@ -37,7 +37,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn:hover{background:#f1f6fd;border-color:#b9cbe4}
 .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn.primary:hover{background:#2a7be6}
-.user{font-size:13px;color:var(--muted);background:#fff;border:1px dashed #b9cbe4;border-radius:999px;padding:6px 12px;cursor:pointer}
+.user{display:none!important;font-size:13px;color:var(--muted);background:#fff;border:1px dashed #b9cbe4;border-radius:999px;padding:6px 12px;cursor:pointer}
 .user input{background:#fff;border:1px solid #b9cbe4;color:var(--text);border-radius:6px;padding:2px 8px;width:140px}
 
 .status{margin-top:26px;display:grid;grid-template-columns:1fr auto;gap:6px 24px;align-items:end}
@@ -210,7 +210,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   .logo{min-width:0;flex:1 1 100%}
   .logo h1{font-size:19px}
   .logo p{font-size:12.5px}
-  .acts{width:100%;display:grid;grid-template-columns:1fr auto auto;gap:8px}
+  .acts{width:100%;display:flex;justify-content:flex-end;gap:8px}
   .acts .user{justify-self:start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .user input{width:100%;font-size:16px}
   .btn{padding:9px 14px;min-height:40px}
