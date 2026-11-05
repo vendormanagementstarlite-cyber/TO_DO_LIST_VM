@@ -560,7 +560,7 @@ function del(){
 }
 
 /* ---- login ---- */
-function showApp(){$('login').classList.add('hide');$('app').hidden=false;$('user').textContent=who||'Tamu'}
+function showApp(){$('login').classList.add('hide');$('app').hidden=false;$('user').textContent=who||'Tamu';$('out').hidden=!pw}
 function logout(expired){LS.del('vmdash_pw');pw='';clearInterval(timer);$('app').hidden=true;$('login').classList.remove('hide');$('lPw').value='';$('lErr').textContent=expired===true?'Sesi berakhir. Masuk lagi dengan kata sandi.':'';animate=true}
 function login(){
   var p=$('lPw').value,n=$('lName').value.trim();if(!p){$('lErr').textContent='Isi kata sandi dulu.';return}
@@ -591,7 +591,10 @@ $('fPicAdd').onclick=addPic;$('fPicNew').onkeydown=function(e){if(e.key==='Enter
 $('dSave').onclick=save;$('dCancel').onclick=closeDrawer;$('dClose').onclick=closeDrawer;$('dDel').onclick=del;$('veil').onclick=closeDrawer;
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer()});
 
-if(pw){showApp();call('dash_load',pw).then(function(d){apply(d);tick()}).catch(function(){logout(true)})}
+/* Tanpa login: langsung masuk. Layar login hanya muncul bila server meminta kata sandi. */
+showApp();
+call('dash_load',pw).then(function(d){apply(d);tick();if(!who)$('user').click()})
+  .catch(function(e){if(/sandi/i.test(e.message))logout(pw?true:false);else{toast('Gagal memuat data. '+e.message);tick()}});
 })();
 </script>
 </body>
