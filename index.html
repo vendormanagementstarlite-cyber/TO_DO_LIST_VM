@@ -199,6 +199,80 @@ button,input,select,textarea{font:inherit;color:inherit}
   .tr .c-t{grid-area:t}.tr .c-p{grid-area:p}.tr .c-s{grid-area:s}.tr .c-d{grid-area:d;text-align:right}.tr .c-e{grid-area:e;justify-self:end}
   .drawer{top:auto;width:100%;height:92vh;border-radius:18px 18px 0 0;transform:translateY(102%)}
 }
+
+/* ===== ponsel ===== */
+@media (max-width:760px){
+  html{-webkit-text-size-adjust:100%}
+  .in,.main{padding-left:14px;padding-right:14px}
+  .main{padding-bottom:96px}
+  .mast{padding:14px 0 26px}
+  .mast .bar{gap:10px}
+  .logo{min-width:0;flex:1 1 100%}
+  .logo h1{font-size:19px}
+  .logo p{font-size:12.5px}
+  .acts{width:100%;display:grid;grid-template-columns:1fr auto auto;gap:8px}
+  .acts .user{justify-self:start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .user input{width:100%;font-size:16px}
+  .btn{padding:9px 14px;min-height:40px}
+  #out{display:none}
+  /* tombol tugas baru melayang di kanan bawah */
+  #newBtn{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:40;min-height:52px;padding:0 22px;border-radius:999px;font-size:16px;box-shadow:0 10px 24px -6px rgba(30,111,217,.55)}
+  #newBtn::before{content:"+";font-size:22px;line-height:1;margin-right:8px;font-weight:500;vertical-align:-2px}
+  .status{margin-top:16px}
+  .status h2{font-size:22px}
+  .status .aside{font-size:13px}
+  .strand{height:10px;margin-top:6px}
+  .legend{flex-wrap:nowrap;overflow-x:auto;margin:10px -14px 0;padding:2px 14px 4px;scrollbar-width:none}
+  .legend::-webkit-scrollbar{display:none}
+  .lg{flex:none;white-space:nowrap;padding:7px 12px 7px 10px;min-height:36px}
+  .board{margin-top:-10px;gap:12px}
+  .rack,.watch{border-radius:14px;padding:14px 14px 10px}
+  .rack header{margin-bottom:6px}
+  .rack h3{font-size:15px}
+  .lane{padding:9px 0;gap:6px 10px}
+  .lname{font-size:14px;padding:2px 0}
+  .lcount{font-size:12.5px;align-self:center}
+  .port{width:32px;height:32px}
+  .rackfoot{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-top:4px}
+  .chartbox{height:250px}
+  .wl{max-height:260px}
+  .tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 8px}
+  .tools input[type=search]{grid-column:1/-1;min-width:0}
+  .tools .seg{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr)}
+  .tools .seg button{padding:10px 2px;font-size:13.5px}
+  .tools #fSort{grid-column:1/-1}
+  .field,.fg input,.fg textarea,select.field{font-size:16px}
+  .field{min-height:44px}
+  .tally{margin-bottom:6px}
+  .list{border-radius:14px}
+  .tr{padding:12px 12px 12px 18px;gap:8px 10px;min-height:0}
+  .tr::before{width:5px}
+  .tr .c-t{padding-right:2px}
+  .tt{font-size:15px}
+  .stsel{padding:8px 30px 8px 14px;min-height:38px;font-size:13.5px}
+  .tr .c-d{font-size:13.5px;align-self:center;display:flex;flex-wrap:wrap;gap:4px 8px;justify-content:flex-end;align-items:center}
+  .tag{margin:0}
+  .ib{width:40px;height:40px}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+  /* panel tambah/ubah sebagai lembar dari bawah */
+  .drawer{height:94vh;height:94dvh}
+  .drawer .dh{padding:14px 18px 12px;position:relative}
+  .drawer .dh::before{content:"";position:absolute;top:6px;left:50%;width:38px;height:4px;margin-left:-19px;border-radius:4px;background:#cfd9e8}
+  .drawer .dh h3{padding-top:6px}
+  .drawer .db{padding:16px 18px}
+  .drawer .df{padding:12px 18px calc(12px + env(safe-area-inset-bottom));flex-wrap:wrap}
+  .opt{padding:9px 14px;min-height:40px}
+  .quick button{padding:8px 12px}
+  .b2{min-height:44px}
+  .drawer .df .sp{display:none}
+  .drawer .df #dDel{order:3;flex:1 1 100%}
+  .drawer .df #dCancel,.drawer .df #dSave{flex:1}
+}
+@media (max-width:380px){
+  .logo h1{font-size:18px}
+  .status h2{font-size:20px}
+  .rackfoot{grid-template-columns:1fr}
+}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
   .port{opacity:1;transform:none}.port.g{opacity:.5}
@@ -553,7 +627,7 @@ function del(){
 }
 
 /* ---- login ---- */
-function showApp(){$('login').classList.add('hide');$('app').hidden=false;$('user').textContent=who||'Tamu';$('out').hidden=!pw}
+function showApp(){$('login').classList.add('hide');$('app').hidden=false;$('user').textContent=who||'Isi nama Anda';$('out').hidden=!pw}
 function logout(expired){LS.del('vmdash_pw');pw='';clearInterval(timer);$('app').hidden=true;$('login').classList.remove('hide');$('lPw').value='';$('lErr').textContent=expired===true?'Sesi berakhir. Masuk lagi dengan kata sandi.':'';animate=true}
 function login(){
   var p=$('lPw').value,n=$('lName').value.trim();if(!p){$('lErr').textContent='Isi kata sandi dulu.';return}
@@ -568,7 +642,7 @@ $('lBtn').onclick=login;$('lPw').onkeydown=function(e){if(e.key==='Enter')login(
 $('out').onclick=function(){logout()};
 $('user').onclick=function(){
   var c=this;if(c.querySelector('input'))return;c.innerHTML='<input type="text" maxlength="30" aria-label="Nama Anda">';var i=c.firstChild;i.value=who||'';i.focus();i.select();
-  var fin=function(ok){var v=i.value.trim();if(ok&&v){who=v;LS.set('vmdash_name',who)}c.textContent=who||'Tamu'};
+  var fin=function(ok){var v=i.value.trim();if(ok&&v){who=v;LS.set('vmdash_name',who)}c.textContent=who||'Isi nama Anda'};
   i.onkeydown=function(e){if(e.key==='Enter')fin(true);if(e.key==='Escape')fin(false)};i.onblur=function(){fin(true)};
 };
 $('refresh').onclick=function(){load()};$('newBtn').onclick=function(){openDrawer(null)};
@@ -586,7 +660,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer(
 
 /* Tanpa login: langsung masuk. Layar login hanya muncul bila server meminta kata sandi. */
 showApp();
-call('dash_load',pw).then(function(d){apply(d);tick();if(!who)$('user').click()})
+call('dash_load',pw).then(function(d){apply(d);tick()})
   .catch(function(e){if(/sandi/i.test(e.message))logout(pw?true:false);else{toast('Gagal memuat data. '+e.message);tick()}});
 })();
 </script>
