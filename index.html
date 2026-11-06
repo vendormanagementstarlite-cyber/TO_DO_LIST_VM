@@ -386,6 +386,10 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:100vh;height:
 .stage::before{display:none!important}
 .nv{white-space:nowrap;padding:0 14px}
 .nid{display:inline-block;min-width:34px;margin-right:6px;font-weight:700;color:#5b57ee;font-variant-numeric:tabular-nums}
+.tr .pc.c-p{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0}
+.tr .pn{display:block;max-width:100%;font-size:11.5px;line-height:1.2;color:#5f6285;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avs .av{letter-spacing:-.02em}
+.tr .pc .avs .av{margin-left:3px}.tr .pc .avs .av:first-child{margin-left:0}
 .gear{cursor:pointer}
 @media (min-width:1001px){.head .gear{display:none}}
 .gear.on{background:#5b57ee;color:#fff}
@@ -775,9 +779,10 @@ var AVC={'RIDHO':'#5b57ee','PAK HENDRA':'#e86f8c','HENDRA':'#e86f8c','HASAN':'#8
 function avColor(n){if(AVC[n])return AVC[n];var h=0;for(var i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))>>>0;return AVP[h%AVP.length]}
 function nice(p){return String(p).toLowerCase().replace(/(^|\s)\S/g,function(c){return c.toUpperCase()})}
 function ini(n){n=String(n||'').trim();if(!n)return '?';if(/^[\d+\-\s]+$/.test(n))return 'WA';var w=n.split(/\s+/);return (w.length>1?w[0][0]+w[1][0]:n.slice(0,2)).toUpperCase()}
+function pcode(n){var b=ini(n),w=String(n).trim().split(/\s+/);if(w.length>1||/^[\d+\-\s]+$/.test(n))return b;var U=String(n).toUpperCase(),o=(S.picList||[]).filter(function(x){return String(x).toUpperCase()!==U&&ini(x)===b});if(!o.length)return b;for(var L=3;L<=U.length;L++){var pre=U.slice(0,L);if(!o.some(function(x){return String(x).toUpperCase().slice(0,L)===pre}))return pre}return U.slice(0,3)}
 function avs(list,max){
   max=max||3;var sh=list.slice(0,max),ex=list.length-sh.length;
-  return '<span class="avs">'+sh.map(function(p){return '<span class="av" style="background:'+avColor(p)+'" title="'+esc(p)+'">'+esc(ini(p))+'</span>'}).join('')+(ex>0?'<span class="av more">+'+ex+'</span>':'')+'</span>';
+  return '<span class="avs">'+sh.map(function(p){return '<span class="av" style="background:'+avColor(p)+'" title="'+esc(p)+'">'+esc(pcode(p))+'</span>'}).join('')+(ex>0?'<span class="av more">+'+ex+'</span>':'')+'</span>';
 }
 function pageList(cur,n){
   if(n<=7){var a=[];for(var i=1;i<=n;i++)a.push(i);return a}
@@ -811,7 +816,7 @@ function renderList(){
     return '<div class="tr rw'+(S.sel[t.id]?' picked':'')+'" role="button" tabindex="0" data-id="'+t.id+'" aria-label="Ubah tugas '+t.id+'">'+
       '<span class="tt"><span class="si '+(late?'late':sc)+'" aria-hidden="true">'+(late?'!':(t.status==='SELESAI'?'✓':(t.status==='ON PROSES'?'…':'•')))+'</span><span class="tc"><span class="tn"><b class="nid">#'+t.id+'</b>'+esc(t.tugas)+'</span>'+(t.remarks?'<span class="rmk">'+esc(t.remarks)+'</span>':'')+'</span></span>'+
       '<span class="stc"><select class="stl sel '+sc+' stsel" data-id="'+t.id+'" aria-label="Ubah status tugas '+t.id+'">'+['BELUM','ON PROSES','SELESAI'].map(function(x){return '<option value="'+x+'"'+(x===t.status?' selected':'')+'>'+TL[x]+'</option>'}).join('')+'</select></span>'+
-      '<span class="pc c-p">'+(ps.length?avs(ps):'<span class="rmk">Belum ada PIC</span>')+'</span>'+
+      '<span class="pc c-p">'+(ps.length?avs(ps)+'<span class="pn">'+esc(ps.map(nice).join(', '))+'</span>':'<span class="rmk">Belum ada PIC</span>')+'</span>'+
       '<span class="dlx c-d">'+esc(i.text)+(i.tag?'<b class="'+i.cls+'">'+esc(i.tag)+'</b>':'')+'</span>'+
       '<span class="c-e"><label class="ck"><input type="checkbox" data-k="'+t.id+'"'+(S.sel[t.id]?' checked':'')+' aria-label="Pilih tugas '+t.id+'"></label></span></div>';
   }).join('')+
