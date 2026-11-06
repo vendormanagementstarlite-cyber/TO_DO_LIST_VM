@@ -200,6 +200,22 @@ button,input,select,textarea{font:inherit;color:inherit}
   .drawer{top:auto;width:100%;height:92vh;border-radius:18px 18px 0 0;transform:translateY(102%)}
 }
 
+/* ===== pilih beberapa ===== */
+.tallyrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 8px}
+.tallyrow .tally{margin:0}
+.b2.sm{padding:6px 12px;min-height:34px;font-size:13.5px}
+.ck{display:none;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer}
+.ck input{width:20px;height:20px;accent-color:var(--blue);cursor:pointer;margin:0}
+.list.pick .ck{display:flex}
+.list.pick .ib{display:none}
+.list.pick .tr{cursor:pointer}
+.tr.picked{background:var(--blue-s)!important}
+.bulk{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:45;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:0 14px 34px -10px rgba(30,60,110,.45);max-width:calc(100vw - 24px)}
+.bulk[hidden]{display:none}
+.bulk .bn{font-weight:700;margin-right:4px}
+.bulk .dng{padding:6px 14px;min-height:34px}
+body.picking .toast{bottom:90px}
+
 /* ===== ponsel ===== */
 @media (max-width:760px){
   html{-webkit-text-size-adjust:100%}
@@ -254,6 +270,11 @@ button,input,select,textarea{font:inherit;color:inherit}
   .tag{margin:0}
   .ib{width:40px;height:40px}
   .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+  body.picking #newBtn{display:none}
+  .bulk{left:12px;right:12px;transform:none;max-width:none;bottom:calc(12px + env(safe-area-inset-bottom));justify-content:space-between}
+  .bulk .bn{flex:1 1 100%;margin:0}
+  .bulk .b2,.bulk .dng{flex:1;min-height:44px}
+  body.picking .toast{bottom:calc(150px + env(safe-area-inset-bottom))}
   /* panel tambah/ubah sebagai lembar dari bawah */
   .drawer{height:94vh;height:94dvh}
   .drawer .dh{padding:14px 18px 12px;position:relative}
@@ -354,8 +375,9 @@ button,input,select,textarea{font:inherit;color:inherit}
         <option value="DL">Deadline terdekat</option><option value="NEW">Terbaru</option><option value="OLD">Terlama</option><option value="PIC">PIC</option>
       </select>
     </div>
-    <p class="tally num" id="tally"></p>
+    <div class="tallyrow"><p class="tally num" id="tally"></p><button class="b2 sm" id="selBtn" type="button">Pilih beberapa</button></div>
     <div class="list" id="list"></div>
+    <div class="bulk" id="bulk" hidden><span class="bn" id="bN"></span><button class="b2 sm" id="bAll" type="button">Pilih semua</button><button class="b2 sm" id="bCancel" type="button">Batal</button><button class="b2 dng" id="bDel" type="button">Hapus</button></div>
   </main>
 </div>
 
@@ -398,7 +420,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 (function(){
 'use strict';
 var $=function(id){return document.getElementById(id)};
-var S={tasks:[],picList:[],today:'',st:'ALL',pic:'ALL',dl:'ALL',sort:'DL',q:'',view:'rack',editId:null,form:null,names:[]};
+var S={tasks:[],picList:[],today:'',st:'ALL',pic:'ALL',dl:'ALL',sort:'DL',q:'',view:'rack',editId:null,form:null,names:[],selMode:false,sel:{}};
 var LS={get:function(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}},del:function(k){try{localStorage.removeItem(k)}catch(e){}}};
 var pw=LS.get('vmdash_pw'), who=LS.get('vmdash_name'), busy=0, timer=null, chart=null, animate=true;
 
@@ -422,6 +444,7 @@ function transport(fn,a){
   if(op==='status'){body.id=a[1];body.status=a[2];body.who=a[3]}
   else if(op==='save'){body.t=a[1];body.who=a[2]}
   else if(op==='delete'){body.id=a[1];body.who=a[2]}
+  else if(op==='deletemany'){body.ids=a[1];body.who=a[2]}
   /* text/plain = "simple request": tidak memicu preflight CORS yang tidak didukung Apps Script */
   return fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),redirect:'follow'})
     .then(function(r){return r.json()},function(){throw new Error('Tidak bisa terhubung ke server. Periksa internet atau alamat API.')})
@@ -560,18 +583,48 @@ function renderList(){
   var l=filtered(), tl={BELUM:'Belum','ON PROSES':'On proses',SELESAI:'Selesai'};
   $('tally').textContent='Menampilkan '+l.length+' dari '+S.tasks.length+' tugas'+(S.pic!=='ALL'?' untuk '+S.pic:'');
   if(!l.length){$('list').innerHTML='<div class="none">Tidak ada tugas yang cocok. Ubah filter atau tambahkan tugas baru.</div>';return}
-  $('list').innerHTML='<div class="hd"><div>No</div><div>Tugas</div><div>PIC</div><div>Status</div><div>Deadline</div><div></div></div>'+l.map(function(t){
+  $('list').innerHTML='<div class="hd"><div>No</div><div>Tugas</div><div>PIC</div><div>Status</div><div>Deadline</div><div class="hk"><label class="ck"><input type="checkbox" id="ckAll" aria-label="Pilih semua yang tampil"></label></div></div>'+l.map(function(t){
     var i=dlInfo(t),ps=pics(t.pic);
-    return '<div class="tr s-'+key(t.status)+(lateOf(t)?' late':'')+'" data-id="'+t.id+'">'+
+    return '<div class="tr s-'+key(t.status)+(lateOf(t)?' late':'')+(S.sel[t.id]?' picked':'')+'" data-id="'+t.id+'">'+
       '<div class="id num">#'+t.id+'</div>'+
       '<div class="c-t tt">'+esc(t.tugas)+(t.remarks?'<small>'+esc(t.remarks)+'</small>':'')+'</div>'+
       '<div class="c-p picsl">'+(ps.length?ps.map(function(p){return '<span class="pc">'+esc(p)+'</span>'}).join(''):'<span class="dim">Belum ada PIC</span>')+'</div>'+
       '<div class="c-s"><select class="stsel st-'+key(t.status)+'" data-id="'+t.id+'" aria-label="Status tugas '+t.id+'">'+['BELUM','ON PROSES','SELESAI'].map(function(s){return '<option value="'+s+'"'+(s===t.status?' selected':'')+'>'+tl[s]+'</option>'}).join('')+'</select></div>'+
       '<div class="c-d dl">'+(i?esc(i.text)+(i.tag?'<span class="tag '+i.cls+'">'+i.tag+'</span>':''):'<span class="dim">Tanpa deadline</span>')+'</div>'+
-      '<div class="c-e"><button class="ib" data-e="'+t.id+'" aria-label="Ubah tugas '+t.id+'" title="Ubah"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></button></div></div>';
+      '<div class="c-e"><label class="ck"><input type="checkbox" data-k="'+t.id+'"'+(S.sel[t.id]?' checked':'')+' aria-label="Pilih tugas '+t.id+'"></label><button class="ib" data-e="'+t.id+'" aria-label="Ubah tugas '+t.id+'" title="Ubah"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></button></div></div>';
   }).join('');
   Array.prototype.forEach.call($('list').querySelectorAll('select.stsel'),function(sel){sel.onchange=function(){quick(Number(sel.getAttribute('data-id')),sel.value)}});
   Array.prototype.forEach.call($('list').querySelectorAll('[data-e]'),function(b){b.onclick=function(){openDrawer(Number(b.getAttribute('data-e')))}});
+  $('list').classList.toggle('pick',S.selMode);
+  Array.prototype.forEach.call($('list').querySelectorAll('input[data-k]'),function(c){c.onchange=function(){setSel(Number(c.getAttribute('data-k')),c.checked)}});
+  Array.prototype.forEach.call($('list').querySelectorAll('.tr'),function(r){r.onclick=function(e){
+    if(!S.selMode||e.target.closest('select,input,label,button'))return;
+    var id=Number(r.getAttribute('data-id'));setSel(id,!S.sel[id])}});
+  var ca=$('ckAll');if(ca)ca.onchange=function(){selectShown(ca.checked)};
+  syncBulk();
+}
+/* ---- pilih & hapus beberapa ---- */
+function selIds(){return Object.keys(S.sel).filter(function(k){return S.sel[k]}).map(Number)}
+function setSel(id,on){if(on)S.sel[id]=1;else delete S.sel[id];var r=$('list').querySelector('.tr[data-id="'+id+'"]');if(r){r.classList.toggle('picked',!!on);var c=r.querySelector('input[data-k]');if(c)c.checked=!!on}syncBulk()}
+function selectShown(on){filtered().forEach(function(t){if(on)S.sel[t.id]=1;else delete S.sel[t.id]});renderList()}
+function syncBulk(){
+  var ids=selIds().filter(function(id){return S.tasks.some(function(t){return t.id===id})});
+  S.sel={};ids.forEach(function(id){S.sel[id]=1});
+  var n=ids.length,shown=filtered(),allOn=shown.length&&shown.every(function(t){return S.sel[t.id]});
+  $('bulk').hidden=!S.selMode;document.body.classList.toggle('picking',S.selMode);
+  $('bN').textContent=n?n+' tugas dipilih':'Pilih tugas yang mau dihapus';
+  $('bDel').disabled=!n;$('bDel').textContent=$('bDel').getAttribute('data-arm')?'Yakin hapus '+n+'? Klik lagi':'Hapus'+(n?' ('+n+')':'');
+  $('bAll').textContent=allOn?'Batal pilih semua':'Pilih semua';
+  $('selBtn').textContent=S.selMode?'Selesai memilih':'Pilih beberapa';
+  var ca=$('ckAll');if(ca){ca.checked=!!allOn;}
+}
+function setSelMode(on){S.selMode=on;if(!on)S.sel={};disarm();renderList()}
+function disarm(){clearTimeout($('bDel')._h);$('bDel').removeAttribute('data-arm')}
+function delMany(){
+  var ids=selIds();if(!ids.length)return;
+  if(!$('bDel').getAttribute('data-arm')){$('bDel').setAttribute('data-arm','1');syncBulk();$('bDel')._h=setTimeout(function(){disarm();syncBulk()},4000);return}
+  disarm();$('bDel').disabled=true;
+  call('dash_deletemany',pw,ids,who).then(function(d){apply(d);setSelMode(false);toast(ids.length+' tugas dihapus')}).catch(function(e){syncBulk();toast('Belum terhapus. '+e.message)});
 }
 function renderPicSel(){
   var set={};S.picList.forEach(function(p){set[p]=1});S.tasks.forEach(function(t){pics(t.pic).forEach(function(p){set[p]=1})});
@@ -645,7 +698,7 @@ $('user').onclick=function(){
   var fin=function(ok){var v=i.value.trim();if(ok&&v){who=v;LS.set('vmdash_name',who)}c.textContent=who||'Isi nama Anda'};
   i.onkeydown=function(e){if(e.key==='Enter')fin(true);if(e.key==='Escape')fin(false)};i.onblur=function(){fin(true)};
 };
-$('refresh').onclick=function(){load()};$('newBtn').onclick=function(){openDrawer(null)};
+$('refresh').onclick=function(){load()};$('selBtn').onclick=function(){setSelMode(!S.selMode)};$('bCancel').onclick=function(){setSelMode(false)};$('bAll').onclick=function(){var shown=filtered(),allOn=shown.length&&shown.every(function(t){return S.sel[t.id]});selectShown(!allOn)};$('bDel').onclick=delMany;$('newBtn').onclick=function(){openDrawer(null)};
 $('q').oninput=function(){S.q=this.value;renderList()};
 $('fPic').onchange=function(){S.pic=this.value;renderRack();renderList()};
 $('fDl').onchange=function(){S.dl=this.value;renderMast();renderList()};
