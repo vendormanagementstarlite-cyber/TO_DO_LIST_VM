@@ -987,7 +987,7 @@ var CFGROWS=[
  ['tag','Sebut nama PIC di tugas baru','Bot menambahkan baris "Tugas baru #12 untuk: RIDHO, DIMAS" di akhir pesan.'],
  ['link','Sisipkan link dasbor di setiap pesan bot','Link dasbor muncul di bagian bawah semua balasan bot.'],
  ['dm','Kirim pesan pribadi ke PIC','PIC yang punya nomor menerima chat pribadi saat dapat tugas baru dari dasbor. Memakai kuota Fonnte.'],
- ['dmedit','Kabari PIC saat tugas diubah atau dihapus','PIC menerima chat pribadi bila ia baru ditambahkan, deadline atau judul berubah, atau tugas dihapus. Perubahan status saja tidak dikirim.']];
+ ['dmedit','Kabari PIC saat tugas diubah atau dihapus','PIC menerima chat pribadi bila ia baru ditambahkan, status, deadline, judul, atau catatan berubah, atau tugas dihapus. Pengubahnya sendiri tidak dikirimi.']];
 function renderSettings(){
   var c=S.cfg,h='<h2>Pengaturan</h2><p>Atur nama Anda dan pesan WhatsApp yang dikirim bot.</p>';
   h+='<div class="srow col"><b>Nama Anda</b><span>Dipakai sebagai pengirim saat Anda mengubah tugas dan tampil di pesan grup.</span><div class="nm"><input type="text" id="setName" maxlength="30" placeholder="Isi nama Anda" aria-label="Nama Anda" value="'+esc(who||'')+'"><button type="button" id="setNameBtn">Simpan nama</button></div></div>';
