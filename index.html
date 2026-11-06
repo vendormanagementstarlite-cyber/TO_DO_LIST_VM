@@ -390,6 +390,12 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:100vh;height:
 .tr .pn{display:block;max-width:100%;font-size:11.5px;line-height:1.2;color:#5f6285;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .avs .av{letter-spacing:-.02em}
 .tr .pc .avs .av{margin-left:3px}.tr .pc .avs .av:first-child{margin-left:0}
+.msb{border:0;background:none;font:inherit;font-size:16px;color:#1c1b3f;display:flex;align-items:center;gap:4px;cursor:pointer;height:100%;padding:0;white-space:nowrap}
+.msb .mv{font-weight:600;max-width:150px;overflow:hidden;text-overflow:ellipsis}.msb .mch{margin-left:6px;color:#5f6285;flex:none}
+.msel.act{box-shadow:inset 0 0 0 2px #5b57ee;background:#fff}
+.mp{position:fixed;z-index:90;min-width:220px;max-height:min(340px,60vh);overflow:auto;padding:8px;border-radius:22px;background:#fff;box-shadow:0 30px 60px -20px rgba(40,40,110,.55);border:1px solid #e3e3f3}
+.mo{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:14px;cursor:pointer;font-size:15px;color:#1c1b3f;white-space:nowrap}.mo:hover{background:#f0f0fb}
+.mo input{width:18px;height:18px;accent-color:#5b57ee;margin:0;flex:none}
 .gear{cursor:pointer}
 @media (min-width:1001px){.head .gear{display:none}}
 .gear.on{background:#5b57ee;color:#fff}
@@ -613,9 +619,9 @@ select.stl.sel.g{background-color:#d4f1e2;color:#0f6a3a;background-image:url("da
 
 <div class="chips" data-only="home list board chart feed">
 <button class="chip on" type="button" id="chipAll">Filter cepat</button>
-<label class="chip sel">PIC&nbsp;<select id="fPic" aria-label="Filter PIC"></select></label>
-<label class="chip sel">Status&nbsp;<select id="fStS" aria-label="Filter status"><option value="ALL">Semua</option><option value="BELUM">Belum</option><option value="ON PROSES">On proses</option><option value="SELESAI">Selesai</option></select></label>
-<label class="chip sel">Deadline&nbsp;<select id="fDl" aria-label="Filter deadline"><option value="ALL">Semua</option><option value="URGENT">Mendesak</option><option value="LATE">Terlambat</option><option value="TODAY">Hari ini</option><option value="WEEK">7 hari ke depan</option><option value="NONE">Tanpa deadline</option></select></label>
+<div class="chip sel msel" id="fPic"><button class="msb" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Filter PIC">PIC&nbsp;<span class="mv">Semua</span><svg class="mch" width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1.5l5 5 5-5"/></svg></button><div class="mp" role="group" aria-label="Pilih PIC" hidden></div></div>
+<div class="chip sel msel" id="fStS"><button class="msb" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Filter status">Status&nbsp;<span class="mv">Semua</span><svg class="mch" width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1.5l5 5 5-5"/></svg></button><div class="mp" role="group" aria-label="Pilih status" hidden></div></div>
+<div class="chip sel msel" id="fDl"><button class="msb" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Filter deadline">Deadline&nbsp;<span class="mv">Semua</span><svg class="mch" width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1.5l5 5 5-5"/></svg></button><div class="mp" role="group" aria-label="Pilih deadline" hidden></div></div>
 <button class="clear" type="button" id="resetF"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>Hapus filter</button>
 <button class="clear out" id="out" type="button" hidden>Keluar</button>
 </div>
@@ -755,15 +761,11 @@ function portOrder(a,b){var o={'ON PROSES':0,BELUM:1,SELESAI:2};if(o[a.status]!=
 function filtered(noSt){
   var q=S.q.trim().toLowerCase();
   var l=S.tasks.filter(function(t){
-    if(!noSt&&S.st!=='ALL'&&t.status!==S.st)return false;
-    if(S.pic!=='ALL'&&pics(t.pic).indexOf(S.pic)<0)return false;
+    if(!noSt&&S.st!=='ALL'&&selOf(S.st).indexOf(t.status)<0)return false;
+    if(S.pic!=='ALL'){var sp=selOf(S.pic),tp=pics(t.pic);if(!sp.some(function(x){return tp.indexOf(x)>=0}))return false}
     if(q&&(t.tugas+' '+t.remarks+' '+t.pic+' #'+t.id).toLowerCase().indexOf(q)<0)return false;
     var d=t.deadline?diff(t.deadline,S.today):null,open=t.status!=='SELESAI';
-    if(S.dl==='LATE'&&!(open&&d!==null&&d<0))return false;
-    if(S.dl==='URGENT'&&!(open&&d!==null&&d<=3))return false;
-    if(S.dl==='TODAY'&&!(open&&d===0))return false;
-    if(S.dl==='WEEK'&&!(open&&d!==null&&d>=0&&d<=7))return false;
-    if(S.dl==='NONE'&&t.deadline)return false;
+    if(S.dl!=='ALL'){var okd=selOf(S.dl).some(function(m){return m==='LATE'?(open&&d!==null&&d<0):m==='URGENT'?(open&&d!==null&&d<=3):m==='TODAY'?(open&&d===0):m==='WEEK'?(open&&d!==null&&d>=0&&d<=7):m==='NONE'?!t.deadline:false});if(!okd)return false}
     return true;
   });
   l.sort(function(a,b){
@@ -796,7 +798,7 @@ function renderQf(){
   var ST=[['ALL','Semua',all.length],['BELUM','Belum',cnt(function(t){return t.status==='BELUM'})],['ON PROSES','On proses',cnt(function(t){return t.status==='ON PROSES'})],['SELESAI','Selesai',cnt(function(t){return t.status==='SELESAI'})]];
   $('seg').innerHTML=ST.map(function(x){return '<button type="button" role="tab" class="tab'+(S.st===x[0]?' on':'')+'" data-v="'+x[0]+'">'+x[1]+' <em>'+x[2]+'</em></button>'}).join('');
   Array.prototype.forEach.call($('seg').children,function(b){b.onclick=function(){S.st=b.getAttribute('data-v');paint()}});
-  $('fPic').value=S.pic;$('fStS').value=S.st;$('fDl').value=S.dl;
+  renderMs('fPic');renderMs('fStS');renderMs('fDl');
   $('chipAll').classList.toggle('on',S.st==='ALL'&&S.pic==='ALL'&&S.dl==='ALL'&&!S.q.trim());
 }
 function dlText(t){
@@ -955,11 +957,30 @@ function delMany(){
   disarm();$('bDel').disabled=true;
   call('dash_deletemany',pw,ids,who).then(function(d){logAct(who,'menghapus <b>'+ids.length+' tugas</b>');apply(d);setSelMode(false);toast(ids.length+' tugas dihapus')}).catch(function(e){syncBulk();toast('Belum terhapus. '+e.message)});
 }
+function selOf(v){return (!v||v==='ALL')?[]:String(v).split(',')}
+var MS={fPic:{key:'pic',opts:function(){return (S.names||[]).map(function(p){return [p,p]})}},
+ fStS:{key:'st',opts:function(){return [['BELUM','Belum'],['ON PROSES','On proses'],['SELESAI','Selesai']]}},
+ fDl:{key:'dl',opts:function(){return [['URGENT','Mendesak'],['LATE','Terlambat'],['TODAY','Hari ini'],['WEEK','7 hari ke depan'],['NONE','Tanpa deadline']]}}};
+function msLabel(id){var m=MS[id],a=selOf(S[m.key]);if(!a.length)return 'Semua';var o=m.opts(),n=a.map(function(v){var f=o.filter(function(x){return x[0]===v})[0];return f?f[1]:v});return a.length<=2?n.join(', '):a.length+' dipilih'}
+function renderMs(id){
+  var m=MS[id],a=selOf(S[m.key]),box=$(id),p=box._mp||box.querySelector('.mp'),o=m.opts(),sig=o.map(function(x){return x[0]}).join('|');
+  box.querySelector('.mv').textContent=msLabel(id);box.classList.toggle('act',a.length>0);
+  if(box._sig!==sig){
+    box._sig=sig;
+    p.innerHTML='<label class="mo"><input type="checkbox" data-v="ALL"><span>Semua</span></label>'+o.map(function(x){return '<label class="mo"><input type="checkbox" data-v="'+esc(x[0])+'"><span>'+esc(x[1])+'</span></label>'}).join('');
+    Array.prototype.forEach.call(p.querySelectorAll('input'),function(c){c.onchange=function(){
+      var v=c.getAttribute('data-v'),cur=selOf(S[m.key]);
+      if(v==='ALL')cur=[];else{var i=cur.indexOf(v);if(c.checked&&i<0)cur.push(v);if(!c.checked&&i>=0)cur.splice(i,1)}
+      S[m.key]=cur.length?cur.join(','):'ALL';paint();
+    }});
+  }
+  Array.prototype.forEach.call(p.querySelectorAll('input'),function(c){var v=c.getAttribute('data-v');c.checked=v==='ALL'?!a.length:a.indexOf(v)>=0});
+}
+function closeMs(){Object.keys(MS).forEach(function(id){var b=$(id);if(!b)return;(b._mp||b.querySelector('.mp')).hidden=true;b.querySelector('.msb').setAttribute('aria-expanded','false')})}
 function renderPicSel(){
   var set={};S.picList.forEach(function(p){set[p]=1});S.tasks.forEach(function(t){pics(t.pic).forEach(function(p){set[p]=1})});
   S.names=Object.keys(set).sort();
-  $('fPic').innerHTML='<option value="ALL">Semua</option>'+S.names.map(function(p){return '<option value="'+esc(p)+'">'+esc(p)+'</option>'}).join('');
-  if(S.names.indexOf(S.pic)<0)S.pic='ALL'; $('fPic').value=S.pic;
+  var keep=selOf(S.pic).filter(function(x){return S.names.indexOf(x)>=0});S.pic=keep.length?keep.join(','):'ALL';renderMs('fPic');
 }
 var CFGROWS=[
  ['group','Umumkan perubahan dasbor ke grup','Setiap tugas yang ditambah, diubah, atau dihapus lewat dasbor dikirim sebagai pesan ke grup WhatsApp.'],
@@ -1047,9 +1068,11 @@ $('lBtn').onclick=login;$('lPw').onkeydown=function(e){if(e.key==='Enter')login(
 $('out').onclick=function(){logout()};$('outM').onclick=function(){logout()};
 $('refresh').onclick=function(){load()};$('selBtn').onclick=function(){setSelMode(!S.selMode)};$('bCancel').onclick=function(){setSelMode(false)};$('bAll').onclick=function(){var shown=filtered(),allOn=shown.length&&shown.every(function(t){return S.sel[t.id]});selectShown(!allOn)};$('bDel').onclick=delMany;$('newBtn').onclick=function(){openDrawer(null)};$('btPlus').onclick=function(){openDrawer(null)};
 $('q').oninput=function(){S.q=this.value;paint()};
-$('fPic').onchange=function(){S.pic=this.value;paint()};
-$('fStS').onchange=function(){S.st=this.value;paint()};
-$('fDl').onchange=function(){S.dl=this.value;paint()};
+Object.keys(MS).forEach(function(id){var b=$(id).querySelector('.msb'),p=$(id).querySelector('.mp');$(id)._mp=p;document.body.appendChild(p);b.onclick=function(e){e.stopPropagation();var willOpen=p.hidden;closeMs();if(willOpen){p.hidden=false;b.setAttribute('aria-expanded','true');var r=b.getBoundingClientRect();p.style.top=(r.bottom+6)+'px';p.style.left=Math.max(8,Math.min(r.left,window.innerWidth-p.offsetWidth-8))+'px'}}});
+document.addEventListener('click',function(e){if(!e.target.closest('.msel,.mp'))closeMs()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMs()});
+function posMs(){Object.keys(MS).forEach(function(id){var b=$(id),pp=b._mp;if(!pp||pp.hidden)return;var r=b.querySelector('.msb').getBoundingClientRect();pp.style.top=(r.bottom+6)+'px';pp.style.left=Math.max(8,Math.min(r.left,window.innerWidth-pp.offsetWidth-8))+'px'})}
+window.addEventListener('scroll',posMs,{passive:true});window.addEventListener('resize',posMs);
 $('resetF').onclick=function(){resetFilters();paint()};$('chipAll').onclick=function(){resetFilters();paint()};
 $('fbtn').onclick=function(){var on=document.body.classList.toggle('showf');this.setAttribute('aria-expanded',String(on))};
 $('hamb').onclick=function(e){e.stopPropagation();var h=$('pop').hidden;$('pop').hidden=!h;this.setAttribute('aria-expanded',String(h))};
