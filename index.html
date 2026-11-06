@@ -384,7 +384,15 @@ body{background:transparent}
 body::before{content:"";position:fixed;top:0;left:0;right:0;height:100vh;height:100lvh;z-index:-1;background:linear-gradient(rgba(6,18,38,.12),rgba(6,18,38,0) 45%,rgba(6,18,38,.1)),var(--bg) center/cover no-repeat,#0b2b4a}
 .stage{background:none!important}
 .stage::before{display:none!important}
-.avatar{padding:0;cursor:pointer;font-family:inherit}
+.nv{white-space:nowrap;padding:0 14px}
+.nid{display:inline-block;min-width:34px;margin-right:6px;font-weight:700;color:#5b57ee;font-variant-numeric:tabular-nums}
+.gear{cursor:pointer}
+@media (min-width:1001px){.head .gear{display:none}}
+.gear.on{background:#5b57ee;color:#fff}
+.srow .nm{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}.srow .nm input{height:44px;border-radius:14px;border:1px solid #d8d8ee;background:#fff;padding:0 14px;font:inherit;min-width:0;flex:1 1 180px;max-width:280px}.srow .nm button{height:44px;padding:0 20px;border-radius:14px;border:0;background:#5b57ee;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.srow.off{opacity:.55}.sw{cursor:pointer}.sw:focus-visible{outline:3px solid rgba(91,87,238,.45);outline-offset:2px}
+.setnote{margin:16px 0 0;font-size:13.5px;color:#5f6285}
+.srow.col{align-items:flex-start;flex-direction:column;gap:0}
 .rbtn{width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.7);display:grid;place-items:center;color:#34336f;box-shadow:inset 0 0 0 1px rgba(205,205,230,.65);flex:none}
 .rbtn:hover{background:#fff}
 .clear.out{margin-left:0}
@@ -519,7 +527,8 @@ select.stl.sel.g{background-color:#d4f1e2;color:#0f6a3a;background-image:url("da
   .head .brand{order:1;flex:1;min-width:0;font-size:17px;color:#fff;gap:10px}
   .head .logo{width:42px;height:42px}
   .head .rbtn{order:2;width:42px;height:42px;background:rgba(255,255,255,.14);color:#fff;box-shadow:none}
-  .head .avatar{order:3;width:42px;height:42px;font-size:15px;border-width:2px}
+  .head .gear{order:3;width:42px;height:42px;background:rgba(255,255,255,.14);color:#fff;box-shadow:none}
+  .head .gear.on{background:rgba(255,255,255,.28)}
   .head .menuwrap{order:4}
   .head .hamb{color:#fff;width:40px;height:40px}
   .head .hamb:hover{background:rgba(255,255,255,.14)}
@@ -589,16 +598,16 @@ select.stl.sel.g{background-color:#d4f1e2;color:#0f6a3a;background-image:url("da
 <div class="stage"><div class="shell">
 <header class="head">
 <div class="brand"><span class="logo"><svg viewBox="-50 -37 652 658" width="30" height="30" aria-hidden="true" style="display:block"><polygon points="163,-35 61,106 72,159 55,170 -48,312 106,619 104,310 188,539 364,539 448,310 446,619 600,312 497,170 480,159 491,106 389,-35 276,366" fill="#111" stroke="#111" stroke-width="6" stroke-linejoin="round"/></svg></span>To Do List VM</div>
-<nav class="mnav" aria-label="Navigasi utama"><button class="nv" type="button" data-go="home">Beranda</button><button class="nv" type="button" data-go="list">Daftar tugas</button><button class="nv" type="button" data-go="board">Papan Kanban</button><button class="nv" type="button" data-go="chart">Grafik</button><button class="nv" type="button" data-go="feed">Aktivitas</button></nav>
+<nav class="mnav" aria-label="Navigasi utama"><button class="nv" type="button" data-go="home">Beranda</button><button class="nv" type="button" data-go="list">Daftar tugas</button><button class="nv" type="button" data-go="board">Papan Kanban</button><button class="nv" type="button" data-go="chart">Grafik</button><button class="nv" type="button" data-go="feed">Aktivitas</button><button class="nv" type="button" data-go="set">Pengaturan</button></nav>
 <div class="mtitle" id="mtitle"><small id="mgreet"></small><h1 id="mh"></h1></div>
 <label class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" id="q" placeholder="Cari tugas, catatan, atau PIC..." aria-label="Cari tugas"></label>
 <button class="fbtn" id="fbtn" type="button" aria-label="Tampilkan filter" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
 <button class="rbtn" id="refresh" type="button" aria-label="Muat ulang data" title="Muat ulang"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 10-2.3 5.7M20 5v6h-6"/></svg></button>
-<button class="avatar" id="user" type="button" title="Ganti nama" aria-label="Ganti nama"></button>
-<div class="menuwrap"><button class="hamb" id="hamb" type="button" aria-label="Menu" aria-expanded="false"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="pop" id="pop" role="menu" hidden><button class="mi" type="button" role="menuitem" data-go="home">Beranda</button><button class="mi" type="button" role="menuitem" data-go="list">Daftar tugas</button><button class="mi" type="button" role="menuitem" data-go="board">Papan Kanban</button><button class="mi" type="button" role="menuitem" data-go="chart">Grafik</button><button class="mi" type="button" role="menuitem" data-go="feed">Aktivitas</button><button class="mi" id="outM" type="button" role="menuitem" hidden>Keluar</button></div></div>
+<button class="rbtn gear" type="button" data-go="set" title="Pengaturan" aria-label="Pengaturan"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
+<div class="menuwrap"><button class="hamb" id="hamb" type="button" aria-label="Menu" aria-expanded="false"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="pop" id="pop" role="menu" hidden><button class="mi" type="button" role="menuitem" data-go="home">Beranda</button><button class="mi" type="button" role="menuitem" data-go="list">Daftar tugas</button><button class="mi" type="button" role="menuitem" data-go="board">Papan Kanban</button><button class="mi" type="button" role="menuitem" data-go="chart">Grafik</button><button class="mi" type="button" role="menuitem" data-go="feed">Aktivitas</button><button class="mi" type="button" role="menuitem" data-go="set">Pengaturan</button><button class="mi" id="outM" type="button" role="menuitem" hidden>Keluar</button></div></div>
 </header>
 
-<div class="chips">
+<div class="chips" data-only="home list board chart feed">
 <button class="chip on" type="button" id="chipAll">Filter cepat</button>
 <label class="chip sel">PIC&nbsp;<select id="fPic" aria-label="Filter PIC"></select></label>
 <label class="chip sel">Status&nbsp;<select id="fStS" aria-label="Filter status"><option value="ALL">Semua</option><option value="BELUM">Belum</option><option value="ON PROSES">On proses</option><option value="SELESAI">Selesai</option></select></label>
@@ -622,6 +631,7 @@ select.stl.sel.g{background-color:#d4f1e2;color:#0f6a3a;background-image:url("da
 
 <section class="kb" id="kb" data-only="board" aria-label="Papan Kanban"></section>
 <section class="glass page" id="feed" data-only="feed" aria-label="Riwayat aktivitas"></section>
+<section class="glass page" id="setp" data-only="set" aria-label="Pengaturan"></section>
 </div></div>
 
 <div class="bulk" id="bulk" hidden><span class="bn" id="bN"></span><button class="btn sm" id="bAll" type="button">Pilih semua</button><button class="btn sm" id="bCancel" type="button">Batal</button><button class="btn dng sm" id="bDel" type="button">Hapus</button></div>
@@ -684,6 +694,7 @@ function transport(fn,a){
   else if(op==='save'){body.t=a[1];body.who=a[2]}
   else if(op==='delete'){body.id=a[1];body.who=a[2]}
   else if(op==='deletemany'){body.ids=a[1];body.who=a[2]}
+  else if(op==='setcfg'){body.cfg=a[1];body.who=a[2]}
   /* text/plain = "simple request": tidak memicu preflight CORS yang tidak didukung Apps Script */
   return fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),redirect:'follow'})
     .then(function(r){return r.json()},function(){throw new Error('Tidak bisa terhubung ke server. Periksa internet atau alamat API.')})
@@ -723,8 +734,8 @@ function avgText(a){return a<1?Math.max(1,Math.round(a*24))+' jam':(Math.round(a
 function resetFilters(){S.st='ALL';S.pic='ALL';S.dl='ALL';S.q='';$('q').value=''}
 function jump(){var e=$('listzone');if(e&&!e.hidden)e.scrollIntoView({behavior:'smooth',block:'start'})}
 function goList(pic,st,dl){S.pic=pic||'ALL';S.st=st||'ALL';S.dl=dl||'ALL';S.q='';$('q').value='';setView('list',true)}
-var VIEWS=['home','list','board','chart','feed'];
-var MT={home:['Ringkasan tugas','Pantau pekerjaan tim VM'],list:['Daftar tugas','Semua pekerjaan tim'],board:['Papan Kanban','Geser kartu untuk pindah status'],chart:['Grafik','Beban kerja per PIC'],feed:['Aktivitas','Tugas masuk dan selesai']};
+var VIEWS=['home','list','board','chart','feed','set'];
+var MT={home:['Ringkasan tugas','Pantau pekerjaan tim VM'],list:['Daftar tugas','Semua pekerjaan tim'],board:['Papan Kanban','Geser kartu untuk pindah status'],chart:['Grafik','Beban kerja per PIC'],feed:['Aktivitas','Tugas masuk dan selesai'],set:['Pengaturan','Nama dan pesan WhatsApp']};
 function renderMtitle(){var m=MT[S.view]||MT.home;$('mgreet').textContent=who?'Halo, '+nice(who):m[1];$('mh').textContent=m[0]}
 function setView(v,keep){
   if(VIEWS.indexOf(v)<0)v='home';
@@ -798,7 +809,7 @@ function renderList(){
   $('list').innerHTML='<div class="tr hd"><span>Tugas</span><span>Status</span><span>PIC</span><span>Deadline</span><span class="c-e"><label class="ck"><input type="checkbox" id="ckAll" aria-label="Pilih semua yang cocok dengan filter"></label></span></div>'+vis.map(function(t){
     var i=dlText(t),ps=pics(t.pic),late=lateOf(t),sc=SC[t.status];
     return '<div class="tr rw'+(S.sel[t.id]?' picked':'')+'" role="button" tabindex="0" data-id="'+t.id+'" aria-label="Ubah tugas '+t.id+'">'+
-      '<span class="tt"><span class="si '+(late?'late':sc)+'" aria-hidden="true">'+(late?'!':(t.status==='SELESAI'?'✓':(t.status==='ON PROSES'?'…':'•')))+'</span><span class="tc"><span class="tn">'+esc(t.tugas)+'</span>'+(t.remarks?'<span class="rmk">'+esc(t.remarks)+'</span>':'')+'</span></span>'+
+      '<span class="tt"><span class="si '+(late?'late':sc)+'" aria-hidden="true">'+(late?'!':(t.status==='SELESAI'?'✓':(t.status==='ON PROSES'?'…':'•')))+'</span><span class="tc"><span class="tn"><b class="nid">#'+t.id+'</b>'+esc(t.tugas)+'</span>'+(t.remarks?'<span class="rmk">'+esc(t.remarks)+'</span>':'')+'</span></span>'+
       '<span class="stc"><select class="stl sel '+sc+' stsel" data-id="'+t.id+'" aria-label="Ubah status tugas '+t.id+'">'+['BELUM','ON PROSES','SELESAI'].map(function(x){return '<option value="'+x+'"'+(x===t.status?' selected':'')+'>'+TL[x]+'</option>'}).join('')+'</select></span>'+
       '<span class="pc c-p">'+(ps.length?avs(ps):'<span class="rmk">Belum ada PIC</span>')+'</span>'+
       '<span class="dlx c-d">'+esc(i.text)+(i.tag?'<b class="'+i.cls+'">'+esc(i.tag)+'</b>':'')+'</span>'+
@@ -945,11 +956,32 @@ function renderPicSel(){
   $('fPic').innerHTML='<option value="ALL">Semua</option>'+S.names.map(function(p){return '<option value="'+esc(p)+'">'+esc(p)+'</option>'}).join('');
   if(S.names.indexOf(S.pic)<0)S.pic='ALL'; $('fPic').value=S.pic;
 }
-function paint(){renderQf();renderStats();renderChart();renderList();renderBoard();renderFeed()}
+var CFGROWS=[
+ ['group','Umumkan perubahan dasbor ke grup','Setiap tugas yang ditambah, diubah, atau dihapus lewat dasbor dikirim sebagai pesan ke grup WhatsApp.'],
+ ['tag','Sebut nama PIC di tugas baru','Bot menambahkan baris "Tugas baru #12 untuk: RIDHO, DIMAS" di akhir pesan.'],
+ ['link','Sisipkan link dasbor di setiap pesan bot','Link dasbor muncul di bagian bawah semua balasan bot.'],
+ ['dm','Kirim pesan pribadi ke PIC','PIC yang punya nomor menerima chat pribadi saat dapat tugas baru dari dasbor. Memakai kuota Fonnte.']];
+function renderSettings(){
+  var c=S.cfg,h='<h2>Pengaturan</h2><p>Atur nama Anda dan pesan WhatsApp yang dikirim bot.</p>';
+  h+='<div class="srow col"><b>Nama Anda</b><span>Dipakai sebagai pengirim saat Anda mengubah tugas dan tampil di pesan grup.</span><div class="nm"><input type="text" id="setName" maxlength="30" placeholder="Isi nama Anda" aria-label="Nama Anda" value="'+esc(who||'')+'"><button type="button" id="setNameBtn">Simpan nama</button></div></div>';
+  CFGROWS.forEach(function(r){
+    h+='<div class="srow'+(c?'':' off')+'"><div><b>'+r[1]+'</b><span>'+r[2]+'</span></div><button type="button" class="sw'+(c&&c[r[0]]?' on':'')+'" role="switch" aria-checked="'+(c&&c[r[0]]?'true':'false')+'" aria-label="'+r[1]+'" data-cfg="'+r[0]+'"'+(c?'':' disabled')+'></button></div>';
+  });
+  h+=(c?'':'<p class="setnote">Pengaturan pesan belum tersedia. Ganti juga file Code.gs di Apps Script dengan versi terbaru, lalu deploy ulang.</p>')+(pw?'<div class="srow col"><b>Keluar</b><span>Akhiri sesi di perangkat ini.</span><div class="nm"><button type="button" id="setOut">Keluar</button></div></div>':'');
+  $('setp').innerHTML=h;
+  var saveName=function(){var v=$('setName').value.trim();if(!v){toast('Isi nama dulu');return}who=v.slice(0,30);LS.set('vmdash_name',who);renderMtitle();toast('Nama disimpan: '+who)};
+  $('setNameBtn').onclick=saveName;$('setName').onkeydown=function(e){if(e.key==='Enter')saveName()};
+  if($('setOut'))$('setOut').onclick=function(){logout()};
+  Array.prototype.forEach.call($('setp').querySelectorAll('[data-cfg]'),function(b){b.onclick=function(){
+    var k=b.getAttribute('data-cfg'),nv=!S.cfg[k],old=S.cfg[k],p={};p[k]=nv;S.cfg[k]=nv;renderSettings();
+    call('dash_setcfg',pw,p,who).then(function(d){apply(d);toast('Pengaturan disimpan')}).catch(function(e){S.cfg[k]=old;renderSettings();toast('Belum tersimpan. '+e.message)});
+  }});
+}
+function paint(){renderQf();renderStats();renderChart();renderList();renderBoard();renderFeed();if(S.view==='set')renderSettings()}
 function renderAll(){renderPicSel();paint();$('refresh').title='Muat ulang (diperbarui '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+')'}
 
 /* ---- data ---- */
-function apply(d){S.tasks=d.tasks;S.picList=d.picList||[];S.today=d.today;renderAll()}
+function apply(d){if(d.settings)S.cfg=d.settings;S.tasks=d.tasks;S.picList=d.picList||[];S.today=d.today;renderAll()}
 function sig(ts){return ts.map(function(t){return [t.id,t.tugas,t.pic,t.status,t.deadline,t.remarks].join('|')}).join('~')}
 function load(silent){return call('dash_load',pw).then(function(d){var ch=silent&&S.tasks.length&&sig(d.tasks)!==sig(S.tasks);apply(d);if(ch)toast('Ada pembaruan data terbaru (dari WhatsApp atau pengguna lain)')}).catch(function(e){if(/sandi/i.test(e.message))logout(true);else if(!silent)toast('Gagal memuat data. '+e.message)})}
 function quick(id,status){
@@ -993,7 +1025,7 @@ function del(){
 }
 
 /* ---- login ---- */
-function setAv(){if($('mh'))renderMtitle();$('user').textContent=who?ini(who):'?';$('user').setAttribute('aria-label','Ganti nama ('+(who||'belum diisi')+')')}
+function setAv(){if($('mh'))renderMtitle();if($('setp')&&S.view==='set')renderSettings()}
 function showApp(){$('login').classList.add('hide');$('app').hidden=false;setAv();$('out').hidden=!pw;$('outM').hidden=!pw}
 function logout(expired){LS.del('vmdash_pw');pw='';clearInterval(timer);$('app').hidden=true;$('login').classList.remove('hide');$('lPw').value='';$('lErr').textContent=expired===true?'Sesi berakhir. Masuk lagi dengan kata sandi.':'';animate=true}
 function login(){
@@ -1007,7 +1039,6 @@ function tick(){clearInterval(timer);timer=setInterval(function(){if(!document.h
 /* ---- events ---- */
 $('lBtn').onclick=login;$('lPw').onkeydown=function(e){if(e.key==='Enter')login()};$('lName').value=who;
 $('out').onclick=function(){logout()};$('outM').onclick=function(){logout()};
-$('user').onclick=function(){var v=window.prompt('Nama Anda (dipakai sebagai pengirim perubahan):',who||'');if(v&&v.trim()){who=v.trim().slice(0,30);LS.set('vmdash_name',who);setAv()}};
 $('refresh').onclick=function(){load()};$('selBtn').onclick=function(){setSelMode(!S.selMode)};$('bCancel').onclick=function(){setSelMode(false)};$('bAll').onclick=function(){var shown=filtered(),allOn=shown.length&&shown.every(function(t){return S.sel[t.id]});selectShown(!allOn)};$('bDel').onclick=delMany;$('newBtn').onclick=function(){openDrawer(null)};$('btPlus').onclick=function(){openDrawer(null)};
 $('q').oninput=function(){S.q=this.value;paint()};
 $('fPic').onchange=function(){S.pic=this.value;paint()};
